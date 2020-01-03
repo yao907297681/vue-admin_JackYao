@@ -12,7 +12,7 @@
                 <template v-slot="slot">
                {{slot.row.id}}
                <a href="" @click.prevent="deleteHandler(slot.row.id)">删除</a>
-               <a href="" @click.prevent="">修改</a>
+               <a href="" @click.prevent="updataHandler(slot.row)">修改</a>
                <a href="" @click.prevent="">详情</a>
                 </template>
             </el-table-column>
@@ -59,6 +59,12 @@ export default {
 
         })
         },
+        updataHandler(row){
+            this.visible=true;
+            this.form=row;
+            this.title='修改信息',
+            this.loadData();
+        },
         toAddHandler(){
             this.title='录入产品信息',
             this.visible=true;
@@ -90,22 +96,25 @@ export default {
             this.visible=false;
         },
         deleteHandler(id){
-            let url = 'http://localhost:6677/category/deleteById'
-            request.get(url).then((response)=>{
-            this.category.some((item,i)=>{
-	        if(item.id == id){
-	        this.category.splice(i,1);
-	    	
-        }
-        }) 
-            
-
+         this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => { 
+        let url="http://localhost:6677/category/deleteById?id="+id;
+        request.get(url).then((response)=>{
+          this.loadData();
+            this.$message({
+          type: 'success',
+          message: response.message
+        });
         })
-            
-        }
+      
+      })}},
 
-    //方法结束
-        },
+
+    
+
         created(){
             this.loadData()
 
